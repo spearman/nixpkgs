@@ -1,31 +1,23 @@
 { stdenv
 , lib
 , buildPythonPackage
-, fetchFromGitHub
+, fetchPypi
 , gdb
 }:
 
 buildPythonPackage rec {
   pname = "pygdbmi";
-  version = "0.10.0.0";
+  version = "0.10.0.1";
 
-  src = fetchFromGitHub {
-    owner = "cs01";
-    repo = "pygdbmi";
-    rev = version;
-    sha256 = "0a6b3zyxwdcb671c6lrwxm8fhvsbjh0m8hf1r18m9dha86laimjr";
+  src = fetchPypi {
+    inherit pname version;
+    sha256 = "sha256-MIqMx6AC6Q41iPWkgBJ9f12V69C6mZOu7umFqkGOeL4=";
   };
 
   checkInputs = [ gdb ];
 
   # tests require gcc for some reason
   doCheck = !stdenv.hostPlatform.isDarwin;
-
-  postPatch = ''
-    # tries to execute flake8,
-    # which is likely to break on flake8 updates
-    echo "def main(): return 0" > tests/static_tests.py
-  '';
 
   meta = with lib; {
     description = "Parse gdb machine interface output with Python";
